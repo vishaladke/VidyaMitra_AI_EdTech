@@ -1,0 +1,15 @@
+flowchart TD
+    START(["Student asks AI Guru a question<br/>(text or voice, Marathi)"]) --> NORM["Normalize question<br/>(grade + subject + text)"]
+    NORM --> HASH{"Exact match<br/>in Redis cache?"}
+    HASH -->|Yes — ~₹0| R1["Return cached answer instantly"]
+    HASH -->|No| SEM{"Similar question already answered?<br/>pgvector similarity > 0.92"}
+    SEM -->|Yes — cheap| R2["Return adapted cached answer"]
+    SEM -->|No| FAQ{"Covered in pre-generated<br/>FAQ bank for this syllabus?"}
+    FAQ -->|Yes — near-zero cost| R3["Return FAQ answer"]
+    FAQ -->|No, genuinely new| LLM["Call Claude Haiku 4.5<br/>system prompt served from prompt cache<br/>(90% cheaper on cache hit)"]
+    LLM --> STORE["Store new Q&A pair in<br/>exact-match + semantic cache"]
+    STORE --> R4["Return answer to student"]
+    R1 --> LOG["Log tokens + ₹ cost to<br/>Super Admin AI-cost dashboard"]
+    R2 --> LOG
+    R3 --> LOG
+    R4 --> LOG

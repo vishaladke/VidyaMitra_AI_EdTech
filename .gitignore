@@ -1,0 +1,53 @@
+# ── Python ──────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# ── Node.js ─────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Build outputs ───────────────────────────────────────────
+frontend/dist/
+*.tsbuildinfo
+
+# ── Environment & Secrets ──────────────────────────────────
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ── IDE ─────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Docker ──────────────────────────────────────────────────
+*.log
+
+# ── Testing ─────────────────────────────────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+coverage/
+
+# ── Alembic ─────────────────────────────────────────────────
+# Don't ignore migrations — they're source of truth
+
+# ── Local mock storage ──────────────────────────────────────
+backend/local_storage/

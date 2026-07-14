@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: edtech_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-edtech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-edtech_local_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-edtech_platform}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-edtech}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: edtech_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: edtech_backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-edtech}:${POSTGRES_PASSWORD:-edtech_local_dev}@postgres:5432/${POSTGRES_DB:-edtech_platform}
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  realtime:
+    build:
+      context: ./realtime-gateway
+    container_name: edtech_realtime
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      BACKEND_URL: http://backend:8000
+    ports:
+      - "4000:4000"
+    depends_on:
+      - backend
+      - redis
+    volumes:
+      - ./realtime-gateway:/app
+      - /app/node_modules
+
+volumes:
+  pgdata:
+  redisdata:
+
+# Frontend (React/Vite) is intentionally not containerized here —
+# run it with `npm run dev` inside /frontend for the fastest local
+# iteration loop. Add a frontend service block only once you also
+# want a production-like container build to test locally.

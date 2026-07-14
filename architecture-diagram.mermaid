@@ -1,0 +1,50 @@
+flowchart TB
+    WEB["React PWA<br/>(installable web + mobile app)<br/>later wrapped with Capacitor for app stores"]
+
+    subgraph GATEWAY["Node.js Realtime Gateway"]
+        WS["Socket.io<br/>AI chat + voice streaming"]
+        WH["WhatsApp webhook receiver"]
+    end
+
+    subgraph BACKEND["Python FastAPI Core Backend"]
+        AUTHRBAC["Auth + RBAC<br/>(Student/Teacher/Parent/Admin/Super Admin)"]
+        SVC["Student · Teacher · Parent ·<br/>Admin · Super Admin services"]
+        SYL["Syllabus + Test/Assignment engine"]
+        RPT["Weekly report generator (scheduled job)"]
+    end
+
+    subgraph AI["AI Orchestration Layer (cost control)"]
+        C1["1 Exact-match cache — Redis"]
+        C2["2 Semantic cache — pgvector"]
+        C3["3 Pre-generated FAQ bank"]
+        C4["4 Claude API — Haiku 4.5 default,<br/>cached system prompt"]
+        VOICE["Sarvam Bulbul + Saaras<br/>Marathi voice in/out"]
+        C1 -->|cache miss| C2
+        C2 -->|cache miss| C3
+        C3 -->|genuinely new| C4
+    end
+
+    subgraph DATA["Data Layer"]
+        PG[("PostgreSQL — Neon<br/>+ pgvector extension")]
+        REDIS[("Redis — Upstash")]
+        R2[("Object storage — Cloudflare R2<br/>syllabus PDFs, avatar video, audio")]
+    end
+
+    subgraph EXT["External Services"]
+        WA["WhatsApp Cloud API<br/>weekly parent reports"]
+        PAY["Razorpay<br/>payments (test + live)"]
+        OTP["Firebase / MSG91<br/>mobile OTP login"]
+    end
+
+    WEB <--> WS
+    WEB <--> BACKEND
+    WS <--> BACKEND
+    WH --> SVC
+    BACKEND <--> AI
+    AI <--> VOICE
+    BACKEND <--> PG
+    BACKEND <--> REDIS
+    BACKEND <--> R2
+    RPT --> WA
+    BACKEND <--> PAY
+    BACKEND <--> OTP
