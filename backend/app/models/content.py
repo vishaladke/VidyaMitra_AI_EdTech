@@ -26,7 +26,7 @@ class HomepageContent(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     media_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     display_order: Mapped[int] = mapped_column(SmallInteger, default=0)
     status: Mapped[ContentStatus] = mapped_column(
-        Enum(ContentStatus, name="content_status"), default=ContentStatus.DRAFT
+        Enum(ContentStatus, name="content_status", values_callable=lambda x: [e.value for e in x]), default=ContentStatus.DRAFT
     )
     language: Mapped[str] = mapped_column(String(10), default="mr")  # mr = Marathi, en = English
     created_by: Mapped[Optional[uuid.UUID]] = mapped_column(

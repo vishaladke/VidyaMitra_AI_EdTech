@@ -54,10 +54,10 @@ class Payment(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     amount_inr: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     currency: Mapped[str] = mapped_column(String(3), default="INR", nullable=False)
     status: Mapped[PaymentStatus] = mapped_column(
-        Enum(PaymentStatus, name="payment_status"), default=PaymentStatus.PENDING, nullable=False, index=True
+        Enum(PaymentStatus, name="payment_status", values_callable=lambda x: [e.value for e in x]), default=PaymentStatus.PENDING, nullable=False, index=True
     )
     provider: Mapped[PaymentProviderEnum] = mapped_column(
-        Enum(PaymentProviderEnum, name="payment_provider_enum"), nullable=False
+        Enum(PaymentProviderEnum, name="payment_provider_enum", values_callable=lambda x: [e.value for e in x]), nullable=False
     )
     provider_order_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     provider_payment_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

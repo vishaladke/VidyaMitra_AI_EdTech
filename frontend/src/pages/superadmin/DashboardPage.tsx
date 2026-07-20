@@ -4,9 +4,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Shield, DollarSign, MessageCircle, FileText, BarChart3, Settings, AlertTriangle,
+  Shield, DollarSign, MessageCircle, FileText, BarChart3, Settings,
 } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+
 import apiClient from '../../api/client';
 
 interface DashboardStats {
@@ -17,7 +17,7 @@ interface DashboardStats {
 }
 
 export function SuperAdminDashboard() {
-  const { user } = useAuth();
+
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
 

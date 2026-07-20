@@ -3,8 +3,8 @@
  */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Users, GraduationCap, Settings, TrendingUp, UserCheck } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+import { BookOpen, Users, GraduationCap, TrendingUp, UserCheck } from 'lucide-react';
+
 import apiClient from '../../api/client';
 
 interface DashboardStats {
@@ -17,7 +17,7 @@ interface DashboardStats {
 }
 
 export function AdminDashboard() {
-  const { user } = useAuth();
+
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
 

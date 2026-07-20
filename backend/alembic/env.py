@@ -21,7 +21,7 @@ from app.models import user, school, syllabus, assessment, ai, attendance, payme
 config = context.config
 
 # Override sqlalchemy.url with the actual DATABASE_URL from settings
-config.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL).replace("+asyncpg", ""))
+config.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

@@ -155,17 +155,6 @@ def upgrade() -> None:
     op.create_index("idx_parent_student_parent", "parent_student_links", ["parent_id"])
     op.create_index("idx_parent_student_student", "parent_student_links", ["student_id"])
 
-    # ── Teacher-Class Assignments ─────────────────────────
-    op.create_table(
-        "teacher_class_assignments",
-        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("uuid_generate_v4()")),
-        sa.Column("teacher_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("class_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("classes.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("subject_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.UniqueConstraint("teacher_id", "class_id", "subject_id", name="uq_teacher_class_subject"),
-    )
-
     # ── Subjects ──────────────────────────────────────────
     op.create_table(
         "subjects",
@@ -180,6 +169,17 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.UniqueConstraint("name", "grade", "board", name="uq_subject_name_grade_board"),
+    )
+
+    # ── Teacher-Class Assignments ─────────────────────────
+    op.create_table(
+        "teacher_class_assignments",
+        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("uuid_generate_v4()")),
+        sa.Column("teacher_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("class_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("classes.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("subject_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.UniqueConstraint("teacher_id", "class_id", "subject_id", name="uq_teacher_class_subject"),
     )
 
     # ── Syllabus Units ────────────────────────────────────

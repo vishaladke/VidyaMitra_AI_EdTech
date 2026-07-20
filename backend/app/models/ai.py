@@ -51,7 +51,7 @@ class AIMessage(Base, UUIDPrimaryKeyMixin):
     is_voice: Mapped[bool] = mapped_column(Boolean, default=False)
     audio_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # R2 URL
     cache_source: Mapped[Optional[AICacheSource]] = mapped_column(
-        Enum(AICacheSource, name="ai_cache_source"), nullable=True
+        Enum(AICacheSource, name="ai_cache_source", values_callable=lambda x: [e.value for e in x]), nullable=True
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
@@ -73,7 +73,7 @@ class AICostLog(Base, UUIDPrimaryKeyMixin):
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
     )
     cache_source: Mapped[AICacheSource] = mapped_column(
-        Enum(AICacheSource, name="ai_cache_source", create_type=False), nullable=False
+        Enum(AICacheSource, name="ai_cache_source", values_callable=lambda x: [e.value for e in x], create_type=False), nullable=False
     )
     model_used: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     input_tokens: Mapped[int] = mapped_column(Integer, default=0)

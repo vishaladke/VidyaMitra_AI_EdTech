@@ -25,7 +25,7 @@ class NotificationLog(Base, UUIDPrimaryKeyMixin):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     channel: Mapped[NotificationChannel] = mapped_column(
-        Enum(NotificationChannel, name="notification_channel"), nullable=False
+        Enum(NotificationChannel, name="notification_channel", values_callable=lambda x: [e.value for e in x]), nullable=False
     )
     template_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     content_preview: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # first 200 chars

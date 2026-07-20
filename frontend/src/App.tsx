@@ -22,7 +22,13 @@ import { ParentDashboard } from './pages/parent/DashboardPage';
 import { ChildProgressPage } from './pages/parent/ChildProgressPage';
 import { ReportsPage } from './pages/parent/ReportsPage';
 import { AdminDashboard } from './pages/admin/DashboardPage';
+import { SyllabusCRUDPage } from './pages/admin/SyllabusCRUDPage';
+import { UserManagementPage } from './pages/admin/UserManagementPage';
+import { ClassManagementPage } from './pages/admin/ClassManagementPage';
 import { SuperAdminDashboard } from './pages/superadmin/DashboardPage';
+import { AICostDashboardPage } from './pages/superadmin/AICostDashboardPage';
+import { ChatAuditPage } from './pages/superadmin/ChatAuditPage';
+import { MasterDataPage } from './pages/superadmin/MasterDataPage';
 
 function AuthRedirect() {
   const { user, isAuthenticated } = useAuth();
@@ -101,6 +107,9 @@ export default function App() {
         }
       >
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/syllabus" element={<SyllabusCRUDPage />} />
+        <Route path="/admin/users" element={<UserManagementPage />} />
+        <Route path="/admin/classes" element={<ClassManagementPage />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
       </Route>
 
@@ -113,6 +122,9 @@ export default function App() {
         }
       >
         <Route path="/super-admin" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/ai-costs" element={<AICostDashboardPage />} />
+        <Route path="/super-admin/chat-audit" element={<ChatAuditPage />} />
+        <Route path="/super-admin/master-data" element={<MasterDataPage />} />
         <Route path="/super-admin/*" element={<SuperAdminDashboard />} />
       </Route>
 

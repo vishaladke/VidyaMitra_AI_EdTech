@@ -19,7 +19,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from sqlalchemy import select
-from app.database import async_session, engine
+from app.database import async_session_factory as async_session, engine
 from app.models.base import Base
 from app.models.user import User, UserRole, StudentProfile, TeacherProfile, ParentProfile
 from app.utils.security import generate_totp_secret

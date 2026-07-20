@@ -1,91 +1,70 @@
-# Phase 4: Admin + Super Admin Panels
+# Phase 4: Admin + Super Admin Panels — Completion Plan
 
-> Phase 3 is complete (2026-07-14). This is the next implementation plan.
+> Phase 3 complete (2026-07-14). Phase 4 backend + admin frontend complete (2026-07-20).
+> **This plan covers the remaining Phase 4 items.**
 
-## Goal
+## Current Status
 
-Build **functional Admin and Super Admin panels** — replacing Phase 1 shells with real features: syllabus CRUD (PDF upload), user management, class/section management, AI cost dashboard, chat audit access, and CMS.
+### ✅ Already Complete
 
----
-
-## Prerequisite
-
-> [!IMPORTANT]
-> **Recommended: Verify infrastructure before Phase 4:**
-> 1. Install Docker Desktop
-> 2. `docker compose up -d postgres redis`
-> 3. `alembic upgrade head && python -m app.scripts.seed_dev_users && python -m app.scripts.seed_syllabus`
-> 4. `pytest tests/ -v` — all 6 test files should pass
-> 5. Login as each role and verify navigation
-
----
-
-## Scope
-
-### In Scope (Phase 4)
-1. **Admin:** Syllabus CRUD (PDF upload + versioning), user management, class/section management
-2. **Super Admin:** AI cost dashboard, full chat audit, homepage CMS, master data management
-
-### Out of Scope (Phase 5+)
-- Payment integration
-- WhatsApp BSP delivery
-- Ad-slot management (DPDP Act compliance)
+| Component | Status | Details |
+|-----------|--------|---------|
+| [admin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/admin_service.py) | ✅ | 362 lines — dashboard stats, user CRUD, subject CRUD, syllabus units, class management, teacher assignment, audit logging |
+| [superadmin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/superadmin_service.py) | ✅ | 373 lines — dashboard stats, AI cost dashboard, chat audit, master data, CMS, audit logs |
+| [admin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/admin.py) router | ✅ | 12 endpoints — dashboard, users, subjects, syllabus-units, classes, teacher-assign |
+| [superadmin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/superadmin.py) router | ✅ | 8 endpoints — dashboard, ai-costs, chat-audit, master-data, cms, audit-logs |
+| Admin [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/DashboardPage.tsx) | ✅ | Stats cards + module navigation |
+| Admin [SyllabusCRUDPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/SyllabusCRUDPage.tsx) | ✅ | Subject/syllabus unit management |
+| Admin [UserManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/UserManagementPage.tsx) | ✅ | User listing, search, update, toggle active |
+| Admin [ClassManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/ClassManagementPage.tsx) | ✅ | Class creation + teacher assignment |
+| SuperAdmin [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/DashboardPage.tsx) | ✅ | Stats cards + module navigation |
 
 ---
 
-## Proposed Changes
-
-### Backend — Admin Service
-
-#### [NEW] `backend/app/services/admin_service.py`
-- `crud_syllabus_upload(admin_id, file, subject_id)` — PDF upload + versioning
-- `crud_users(admin_id, filters)` — list/update user profiles
-- `crud_classes(admin_id)` — create/update classes and sections
-- `assign_teacher_to_class(admin_id, teacher_id, class_id, subject_id)`
-
-#### [MODIFY] `backend/app/routers/admin.py`
-Replace dashboard shell with functional endpoints.
-
----
-
-### Backend — Super Admin Service
-
-#### [NEW] `backend/app/services/superadmin_service.py`
-- `get_ai_cost_dashboard()` — tokens used, ₹ cost, cache-hit rate, per-user breakdown
-- `get_chat_audit_log(filters)` — full AI conversation access with search
-- `crud_master_data()` — subjects, boards, grades management
-- `crud_homepage_content()` — marketing page CMS
-
-#### [MODIFY] `backend/app/routers/superadmin.py`
-Replace dashboard shell with functional endpoints.
-
----
-
-### Frontend — Admin Pages
-
-#### [MODIFY] `frontend/src/pages/admin/DashboardPage.tsx`
-#### [NEW] `frontend/src/pages/admin/SyllabusCRUDPage.tsx`
-#### [NEW] `frontend/src/pages/admin/UserManagementPage.tsx`
-#### [NEW] `frontend/src/pages/admin/ClassManagementPage.tsx`
-
----
+## Remaining Work
 
 ### Frontend — Super Admin Pages
 
-#### [MODIFY] `frontend/src/pages/superadmin/DashboardPage.tsx`
 #### [NEW] `frontend/src/pages/superadmin/AICostDashboardPage.tsx`
+- Detailed AI cost breakdown: daily/weekly/monthly costs in ₹
+- Per-user cost table, cache-hit rate chart, token usage breakdown
+- Cost trend over time (line chart or bar chart)
+- Calls `GET /super-admin/ai-costs`
+
 #### [NEW] `frontend/src/pages/superadmin/ChatAuditPage.tsx`
+- Full AI conversation list with search/filter by user, date, flagged status
+- Drill-down into individual conversations with full message history
+- Calls `GET /super-admin/chat-audit` and `GET /super-admin/chat-audit/{id}`
+
 #### [NEW] `frontend/src/pages/superadmin/MasterDataPage.tsx`
+- Subjects, boards, grades management with CRUD operations
+- Calls `GET /super-admin/master-data` and admin subject endpoints
 
 ---
 
-## Open Questions
+### Frontend — Routing
 
-> [!IMPORTANT]
-> **1. PDF upload storage:** Should we use local filesystem (dev) or R2 (production)? The storage provider abstraction already exists.
+#### [MODIFY] `frontend/src/App.tsx`
+Wire actual routes for admin and super admin sub-pages instead of wildcard fallbacks:
 
-> [!NOTE]
-> **2. AI cost calculation:** Should costs be calculated in real-time from `ai_messages.tokens_used` and `ai_messages.cost_inr`, or cached/aggregated periodically?
+**Admin routes:**
+- `/admin/syllabus` → `SyllabusCRUDPage`
+- `/admin/users` → `UserManagementPage`
+- `/admin/classes` → `ClassManagementPage`
+
+**Super Admin routes:**
+- `/super-admin/ai-costs` → `AICostDashboardPage`
+- `/super-admin/chat-audit` → `ChatAuditPage`
+- `/super-admin/master-data` → `MasterDataPage`
+
+---
+
+### Tests
+
+#### [NEW] `backend/tests/test_admin_superadmin.py`
+- Admin service importability, function signatures
+- SuperAdmin service importability, function signatures
+- RBAC boundary checks (admin can't access superadmin endpoints, student can't access admin endpoints)
 
 ---
 
@@ -98,8 +77,7 @@ cd frontend && npx tsc --noEmit && npx vite build
 ```
 
 ### Manual Verification
-1. Login as admin → syllabus CRUD works
-2. Upload PDF → stored and retrievable
-3. Create class + assign teacher → reflected in roster
-4. Login as super admin → AI cost dashboard shows data
-5. Chat audit → search and filter conversations
+1. Login as admin → navigate to each sub-page (syllabus, users, classes)
+2. Login as super admin → navigate to AI costs, chat audit, master data
+3. Verify RBAC: admin cannot access super admin pages
+4. Verify routing: all navigation links work correctly

@@ -36,7 +36,7 @@ class Assignment(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     assignment_type: Mapped[AssignmentType] = mapped_column(
-        Enum(AssignmentType, name="assignment_type"), default=AssignmentType.HOMEWORK, nullable=False
+        Enum(AssignmentType, name="assignment_type", values_callable=lambda x: [e.value for e in x]), default=AssignmentType.HOMEWORK, nullable=False
     )
     subject_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("subjects.id", ondelete="CASCADE"), nullable=False
@@ -66,14 +66,14 @@ class Question(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     )
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
     question_type: Mapped[QuestionType] = mapped_column(
-        Enum(QuestionType, name="question_type"), default=QuestionType.MCQ, nullable=False
+        Enum(QuestionType, name="question_type", values_callable=lambda x: [e.value for e in x]), default=QuestionType.MCQ, nullable=False
     )
     options: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # MCQ: {"a": "...", "b": "..."}
     correct_answer: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     explanation: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     marks: Mapped[float] = mapped_column(Numeric(4, 2), default=1.0, nullable=False)
     difficulty: Mapped[Optional[DifficultyLevel]] = mapped_column(
-        Enum(DifficultyLevel, name="difficulty_level"), default=DifficultyLevel.MEDIUM
+        Enum(DifficultyLevel, name="difficulty_level", values_callable=lambda x: [e.value for e in x]), default=DifficultyLevel.MEDIUM
     )
     display_order: Mapped[int] = mapped_column(SmallInteger, default=0)
 

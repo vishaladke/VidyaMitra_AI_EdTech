@@ -28,7 +28,7 @@ class AttendanceRecord(Base, UUIDPrimaryKeyMixin):
     )
     date: Mapped[date] = mapped_column(Date, nullable=False)
     status: Mapped[AttendanceStatus] = mapped_column(
-        Enum(AttendanceStatus, name="attendance_status"), default=AttendanceStatus.PRESENT, nullable=False
+        Enum(AttendanceStatus, name="attendance_status", values_callable=lambda x: [e.value for e in x]), default=AttendanceStatus.PRESENT, nullable=False
     )
     marked_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False

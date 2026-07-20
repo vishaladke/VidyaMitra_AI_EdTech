@@ -30,7 +30,7 @@ class User(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     phone: Mapped[str] = mapped_column(String(15), unique=True, nullable=False, index=True)
     email: Mapped[Optional[str]] = mapped_column(String(255), unique=True, nullable=True)
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole, name="user_role"), nullable=False, index=True)
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole, name="user_role", values_callable=lambda x: [e.value for e in x]), nullable=False, index=True)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
@@ -62,7 +62,7 @@ class StudentProfile(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         UUID(as_uuid=True), ForeignKey("sections.id", ondelete="SET NULL"), nullable=True
     )
     date_of_birth: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    gender: Mapped[Optional[GenderEnum]] = mapped_column(Enum(GenderEnum, name="gender_enum"), nullable=True)
+    gender: Mapped[Optional[GenderEnum]] = mapped_column(Enum(GenderEnum, name="gender_enum", values_callable=lambda x: [e.value for e in x]), nullable=True)
     city: Mapped[str] = mapped_column(String(100), default="Solapur")
     streak_days: Mapped[int] = mapped_column(SmallInteger, default=0, nullable=False)
 

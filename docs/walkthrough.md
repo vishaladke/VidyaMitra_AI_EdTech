@@ -1,14 +1,15 @@
 # Walkthrough — VidyaMitra EdTech Platform
 
-> Last updated: 2026-07-14
+> Last updated: 2026-07-20
 
 ## Summary
 
 **Phase 1** scaffold — ✅ COMPLETE.  
 **Phase 2** AI Guru + Syllabus — ✅ COMPLETE.  
-**Phase 3** Teacher + Parent Dashboards — ✅ COMPLETE.
+**Phase 3** Teacher + Parent Dashboards — ✅ COMPLETE.  
+**Phase 4** Admin + Super Admin Panels — ✅ COMPLETE.
 
-All three services compile and build with zero errors. The platform now has **functional dashboards for all 5 roles**.
+All three services compile and build with zero errors. The platform has **functional dashboards for all 5 roles** with full backend APIs and frontend pages for admin and super admin.
 
 ---
 
@@ -66,19 +67,67 @@ All three services compile and build with zero errors. The platform now has **fu
 
 ---
 
+## Phase 4 Changes (Admin + Super Admin — Complete)
+
+### Backend — New Services (2 files)
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| [admin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/admin_service.py) | ~362 | Dashboard stats, user CRUD (list/update/toggle), subject CRUD, syllabus units, class management, teacher assignment, audit logging |
+| [superadmin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/superadmin_service.py) | ~373 | Dashboard stats, AI cost dashboard, chat audit log, master data summary, homepage CMS, admin audit logs |
+
+### Backend — Upgraded Routers (2 files)
+
+| File | Endpoints | Purpose |
+|------|-----------|---------|
+| [admin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/admin.py) | 12 | Dashboard, users (list/update/toggle), subjects (list/create/update), syllabus-units (create), classes (list/create), teacher-assign (list/create) |
+| [superadmin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/superadmin.py) | 8 | Dashboard, ai-costs, chat-audit (list + detail), master-data, cms (list + upsert), audit-logs |
+
+### Frontend — Admin Pages (4 files) ✅
+
+| File | Features |
+|------|----------|
+| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/DashboardPage.tsx) | Stats cards (users, students, teachers, parents, subjects, classes), module navigation |
+| [SyllabusCRUDPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/SyllabusCRUDPage.tsx) | Subject listing + syllabus unit creation |
+| [UserManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/UserManagementPage.tsx) | User listing with search, role filter, edit/toggle active |
+| [ClassManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/ClassManagementPage.tsx) | Class creation + teacher-to-class assignment |
+
+### Frontend — Super Admin Pages (4 files) ✅
+
+| File | Features |
+|------|----------|
+| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/DashboardPage.tsx) | Stats cards (users, AI cost, cache rate, flagged), module navigation |
+| [AICostDashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/AICostDashboardPage.tsx) | Period selector, daily cost trend chart, cache source breakdown, per-user cost table |
+| [ChatAuditPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/ChatAuditPage.tsx) | Searchable conversation list, flagged filter, pagination, message drill-down modal |
+| [MasterDataPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/MasterDataPage.tsx) | Boards overview, expandable grade→subjects accordion, create subject modal |
+
+### Frontend — Routing ✅
+
+[App.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/App.tsx) — 13 new route imports + 6 specific routes wired:
+- Admin: `/admin/syllabus`, `/admin/users`, `/admin/classes`
+- Super Admin: `/super-admin/ai-costs`, `/super-admin/chat-audit`, `/super-admin/master-data`
+
+### Backend — Tests (1 file, 17 test cases) ✅
+
+| File | Test Cases |
+|------|------------|
+| [test_admin_superadmin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/tests/test_admin_superadmin.py) | Admin service importability (12 functions), SuperAdmin service importability (8 functions), RBAC enum boundaries, model structure (AuditLog, HomepageContent, AICostLog, AIConversation, TeacherClassAssignment), router endpoint counts |
+
+---
+
 ## Cumulative File Count
 
-| Layer | Phase 1 | Phase 2 | Phase 3 | Total |
-|-------|---------|---------|---------|-------|
-| Backend Models | 11 | — | — | 11 |
-| Backend Services | 2 | 5 | 3 | 10 |
-| Backend Routers | 7 | 2 | — (upgraded) | 9 |
-| Backend Tests | 3 | 1 | 1 | 5 |
-| Backend Scripts | 1 | 1 | — (bug fix) | 2 |
-| Gateway | 6 | — (upgraded) | — | 6 |
-| Frontend Pages | 8 | 3 | 7 | 18 |
-| Frontend Components | 3 | 5 | — | 8 |
-| Frontend Hooks/API | 4 | — | — | 4 |
+| Layer | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Total |
+|-------|---------|---------|---------|---------|-------|
+| Backend Models | 11 | — | — | — | 11 |
+| Backend Services | 2 | 5 | 3 | 2 | 12 |
+| Backend Routers | 7 | 2 | — (upgraded) | — (upgraded) | 9 |
+| Backend Tests | 3 | 1 | 1 | 1 | 6 |
+| Backend Scripts | 1 | 1 | — (bug fix) | — | 2 |
+| Gateway | 6 | — (upgraded) | — | — | 6 |
+| Frontend Pages | 8 | 3 | 7 | 7 (+1 upgraded) | 25 |
+| Frontend Components | 3 | 5 | — | — | 8 |
+| Frontend Hooks/API | 4 | — | — | — | 4 |
 
 ---
 
@@ -87,7 +136,7 @@ All three services compile and build with zero errors. The platform now has **fu
 | Check | Result |
 |-------|--------|
 | Frontend `tsc --noEmit` | ✅ Zero errors |
-| Frontend `vite build` | ✅ **1698 modules**, 8.80s, 416 KB JS + 32.5 KB CSS, PWA SW |
+| Frontend `vite build` | ✅ **1704 modules**, 8.83s, 461 KB JS + 37.9 KB CSS, PWA SW |
 | Gateway `tsc --noEmit` | ✅ Zero errors |
 | Docker compose | ⏳ Docker not installed |
 | Alembic migration | ⏳ Needs Postgres |

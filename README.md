@@ -11,7 +11,7 @@ All project documentation lives in the `docs/` folder:
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | System design, tech stack rationale, data model, AI/safety design, security, compliance |
 | [`DEPLOYMENT.md`](DEPLOYMENT.md) | Local setup → free-tier pilot hosting → scale-up, with a cost table |
 | [`ANTIGRAVITY_PROMPT.md`](ANTIGRAVITY_PROMPT.md) | Copy-paste build prompt for Antigravity IDE / Claude Opus |
-| [`docs/implementation_plan.md`](docs/implementation_plan.md) | Phase 2 implementation plan: AI Guru chat, syllabus browser, student features |
+| [`docs/implementation_plan.md`](docs/implementation_plan.md) | Phase 4 implementation plan: Admin + Super Admin panel completion |
 | [`docs/walkthrough.md`](docs/walkthrough.md) | Full walkthrough: what was built across all phases, verification results |
 | [`docs/task.md`](docs/task.md) | Comprehensive task tracker: all phases with completion status |
 | [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) | Step-by-step local development setup guide (Docker, Python, Node) |
@@ -58,7 +58,7 @@ See [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) for the full guide with trouble
 - [x] **Phase 2 complete** — AI Guru chat (cache-first flow + streaming), syllabus browser, functional student dashboard, progress service, safety fixes, seed data
 - [x] **Phase 3 complete** — Teacher dashboard (attendance, student progress, AI usage oversight, assignments), Parent dashboard (children, progress, weekly reports, notification prefs), report generation service
 - [ ] Infrastructure verification — Docker compose up, Alembic migration, pytest, RBAC end-to-end
-- [ ] Phase 4 — Admin + Super Admin panels
+- [x] **Phase 4 complete** — Admin panel (syllabus CRUD, user management, class management) + Super Admin panel (AI cost dashboard, chat audit, master data, CMS, audit logs)
 - [ ] Phase 5 — Payments + WhatsApp reports
 - [ ] Phase 6 — Security hardening + free-tier pilot deploy
 - [ ] School Profile module (later, only once a school signs on)
