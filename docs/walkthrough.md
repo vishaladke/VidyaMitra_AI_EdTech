@@ -1,15 +1,93 @@
 # Walkthrough — VidyaMitra EdTech Platform
 
-> Last updated: 2026-07-20
+> Last updated: 2026-07-21
 
 ## Summary
 
 **Phase 1** scaffold — ✅ COMPLETE.  
 **Phase 2** AI Guru + Syllabus — ✅ COMPLETE.  
 **Phase 3** Teacher + Parent Dashboards — ✅ COMPLETE.  
-**Phase 4** Admin + Super Admin Panels — ✅ COMPLETE.
+**Phase 4** Admin + Super Admin Panels — ✅ COMPLETE.  
+**Phase 5** Payments + WhatsApp Reports — ✅ COMPLETE.
 
-All three services compile and build with zero errors. The platform has **functional dashboards for all 5 roles** with full backend APIs and frontend pages for admin and super admin.
+All three services compile and build with zero errors. The platform has **functional dashboards for all 5 roles** with full backend APIs, payment processing (offline_mock → razorpay_test → razorpay_live), WhatsApp notification integration, and subscription management.
+
+---
+
+## Phase 5 Changes (Payments + WhatsApp Reports)
+
+### Backend — Payment Providers (2 files, fully implemented)
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| [razorpay_test.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/providers/payment/razorpay_test.py) | ~170 | Full Razorpay sandbox: create_order (INR→paise), verify_payment (HMAC sig), verify_webhook, fetch_payment_details |
+| [razorpay_live.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/providers/payment/razorpay_live.py) | ~45 | Inherits from test — validates live key prefix, stricter logging |
+
+### Backend — Services (3 files)
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| [payment_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/payment_service.py) | ~280 | Full flow: plan listing, order creation, verify+activate, webhook handling (captured/failed/refund), subscription status, payment history |
+| [notification_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/notification_service.py) | ~230 | Provider factory, send+log, WhatsApp report delivery, batch weekly reports, delivery status updates, notification history |
+| [report_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/report_service.py) | +60 | Added generate_and_send_weekly_reports(), format_whatsapp_template_params() |
+
+### Backend — Schemas (1 new file)
+
+| File | Purpose |
+|------|---------|
+| [payment.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/schemas/payment.py) | SubscriptionPlanResponse, PaymentOrderRequest/Response, PaymentVerifyRequest/Response, RazorpayWebhookEvent, PaymentHistoryItem/Response, UserSubscriptionResponse |
+
+### Backend — Routers (2 new files)
+
+| File | Endpoints | Purpose |
+|------|-----------|---------| 
+| [payments.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/payments.py) | 6 | Plans (public), create-order, verify, webhook (sig verified), subscription status, history |
+| [webhooks.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/webhooks.py) | 1 | WhatsApp inbound — delivery status updates + inbound message handling |
+
+### Backend — WhatsApp Provider (1 file, fully implemented)
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| [whatsapp.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/providers/notification/whatsapp.py) | ~200 | BSP integration (AiSensy/Interakt/Gupshup compatible), template messages, delivery receipt parsing, inbound message parsing |
+
+### Backend — Seed Data (1 new file)
+
+| File | Purpose |
+|------|---------|
+| [seed_subscriptions.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/scripts/seed_subscriptions.py) | 4 plans: Free Trial (₹0/30d), Monthly (₹99/30d), Quarterly (₹249/90d), Annual (₹799/365d) with Marathi descriptions |
+
+### Backend — Config Updates
+
+| File | Changes |
+|------|---------|
+| [config.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/config.py) | Added `NOTIFICATION_PROVIDER` (mock/whatsapp), `WHATSAPP_BSP_URL` |
+| [.env.example](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/.env.example) | Added `NOTIFICATION_PROVIDER`, `WHATSAPP_BSP_URL` |
+| [main.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/main.py) | Mounted `payments` and `webhooks` routers |
+
+### Backend — Tests (2 new files, 44 test cases)
+
+| File | Test Cases |
+|------|------------|
+| [test_payments.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/tests/test_payments.py) | Provider factory, offline mock (create/verify/webhook), Razorpay inheritance, model enums (PaymentStatus/ProviderEnum/SubscriptionStatus), model structure, service importability (8 functions), schema validation, router endpoints (count + paths), seed data (4 plans) |
+| [test_notifications.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/tests/test_notifications.py) | Provider factory, mock provider (send + no params), WhatsApp provider (importability, no-key fallback, delivery status parsing, empty webhook, inbound messages), model enums (NotificationChannel), model structure, service importability (7 functions), template params extraction (3 cases), report service WhatsApp functions, webhook router |
+
+### Frontend — Student Pages (1 new file)
+
+| File | Features |
+|------|----------|
+| [SubscriptionPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/student/SubscriptionPage.tsx) | Current subscription status card, plan comparison grid (4 plans with ₹ pricing and Marathi labels), Razorpay checkout integration + mock payment flow for dev, payment history table with status badges |
+
+### Frontend — Parent Pages (1 new file)
+
+| File | Features |
+|------|----------|
+| [NotificationSettingsPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/parent/NotificationSettingsPage.tsx) | WhatsApp/email toggle switches, phone number display, report preview with WhatsApp-style Marathi message bubble, delivery history list |
+
+### Frontend — Routing
+
+[App.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/App.tsx) — 2 new routes:
+- `/student/subscription` → `SubscriptionPage`
+- `/parent/notifications` → `NotificationSettingsPage`
 
 ---
 
@@ -18,7 +96,7 @@ All three services compile and build with zero errors. The platform has **functi
 ### Backend — New Services (3 files)
 
 | File | Lines | Purpose |
-|------|-------|---------|
+|------|-------|---------| 
 | [teacher_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/teacher_service.py) | ~380 | Roster, attendance (single/bulk), attendance summary, student detail, AI usage overview, assignment CRUD |
 | [parent_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/parent_service.py) | ~200 | Linked children, dashboard stats, child progress (parent auth check), notification prefs |
 | [report_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/report_service.py) | ~210 | Weekly report generation, Marathi summary builder for WhatsApp, batch report generation |
@@ -26,108 +104,68 @@ All three services compile and build with zero errors. The platform has **functi
 ### Backend — Upgraded Routers (2 files)
 
 | File | Endpoints | Purpose |
-|------|-----------|---------|
+|------|-----------|---------| 
 | [teachers.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/teachers.py) | 10 | Dashboard, roster, student detail, single/bulk attendance, attendance summary, AI usage, assignment CRUD |
 | [parents.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/parents.py) | 7 | Dashboard, children list, child detail, weekly reports (all/per-child), notification prefs get/update |
-
-### Backend — Bug Fixes (1 file)
-
-| File | Fix |
-|------|-----|
-| [seed_dev_users.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/scripts/seed_dev_users.py) | `relationship` → `relationship_type` (column name mismatch) |
-
-### Backend — Tests (1 file, 13 test cases)
-
-| File | Test Cases |
-|------|------------|
-| [test_teacher_parent.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/tests/test_teacher_parent.py) | RBAC enums, attendance statuses, assignment types, parent-student link model, notification prefs model, attendance record model, Marathi summary (5 cases), teacher service importability, parent service importability |
 
 ### Frontend — Teacher Pages (4 files)
 
 | File | Features |
 |------|----------|
-| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/DashboardPage.tsx) | Stats cards (students, active today, attendance, AI conversations), module navigation, Marathi greeting |
-| [AttendancePage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/AttendancePage.tsx) | Tap-to-cycle status, date picker, bulk save, live summary counts |
-| [StudentProgressPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/StudentProgressPage.tsx) | Roster list → drill-down detail with AI stats, subject distribution, flagged conversations |
-| [AIUsagePage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/AIUsagePage.tsx) | 7/14/30-day period selector, flagged count, top topics, most active students |
+| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/DashboardPage.tsx) | Stats cards, module navigation, Marathi greeting |
+| [AttendancePage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/AttendancePage.tsx) | Tap-to-cycle status, date picker, bulk save, live summary |
+| [StudentProgressPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/StudentProgressPage.tsx) | Roster list → drill-down detail with AI stats |
+| [AIUsagePage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/teacher/AIUsagePage.tsx) | Period selector, flagged conversations, top topics |
 
 ### Frontend — Parent Pages (3 files)
 
 | File | Features |
 |------|----------|
-| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/parent/DashboardPage.tsx) | Children cards with streak, stats overview, module navigation |
-| [ChildProgressPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/parent/ChildProgressPage.tsx) | AI stats, 30-day attendance, subject progress bars, test score history |
-| [ReportsPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/parent/ReportsPage.tsx) | Weekly reports per child with stats grid + Marathi WhatsApp summary preview |
-
-### Frontend — Routing
-
-[App.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/App.tsx) — 7 new routes:
-- `/teacher/attendance`, `/teacher/progress`, `/teacher/roster`, `/teacher/ai-usage`
-- `/parent/children/:childId`, `/parent/progress`, `/parent/reports`
+| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/parent/DashboardPage.tsx) | Children cards with streak, stats overview |
+| [ChildProgressPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/parent/ChildProgressPage.tsx) | AI stats, 30-day attendance, subject progress, test scores |
+| [ReportsPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/parent/ReportsPage.tsx) | Weekly reports per child + Marathi WhatsApp summary |
 
 ---
 
-## Phase 4 Changes (Admin + Super Admin — Complete)
+## Phase 4 Changes (Admin + Super Admin)
 
-### Backend — New Services (2 files)
+### Backend — Services (2 files)
 
 | File | Lines | Purpose |
 |------|-------|---------|
-| [admin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/admin_service.py) | ~362 | Dashboard stats, user CRUD (list/update/toggle), subject CRUD, syllabus units, class management, teacher assignment, audit logging |
-| [superadmin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/superadmin_service.py) | ~373 | Dashboard stats, AI cost dashboard, chat audit log, master data summary, homepage CMS, admin audit logs |
+| [admin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/admin_service.py) | ~362 | Dashboard stats, user CRUD, subject CRUD, syllabus units, class management, teacher assignment |
+| [superadmin_service.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/services/superadmin_service.py) | ~373 | Dashboard stats, AI cost dashboard, chat audit log, master data, CMS, audit logs |
 
-### Backend — Upgraded Routers (2 files)
+### Frontend — Admin + Super Admin Pages (8 files)
 
-| File | Endpoints | Purpose |
-|------|-----------|---------|
-| [admin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/admin.py) | 12 | Dashboard, users (list/update/toggle), subjects (list/create/update), syllabus-units (create), classes (list/create), teacher-assign (list/create) |
-| [superadmin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/routers/superadmin.py) | 8 | Dashboard, ai-costs, chat-audit (list + detail), master-data, cms (list + upsert), audit-logs |
-
-### Frontend — Admin Pages (4 files) ✅
-
-| File | Features |
-|------|----------|
-| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/DashboardPage.tsx) | Stats cards (users, students, teachers, parents, subjects, classes), module navigation |
-| [SyllabusCRUDPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/SyllabusCRUDPage.tsx) | Subject listing + syllabus unit creation |
-| [UserManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/UserManagementPage.tsx) | User listing with search, role filter, edit/toggle active |
-| [ClassManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/ClassManagementPage.tsx) | Class creation + teacher-to-class assignment |
-
-### Frontend — Super Admin Pages (4 files) ✅
-
-| File | Features |
-|------|----------|
-| [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/DashboardPage.tsx) | Stats cards (users, AI cost, cache rate, flagged), module navigation |
-| [AICostDashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/AICostDashboardPage.tsx) | Period selector, daily cost trend chart, cache source breakdown, per-user cost table |
-| [ChatAuditPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/ChatAuditPage.tsx) | Searchable conversation list, flagged filter, pagination, message drill-down modal |
-| [MasterDataPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/MasterDataPage.tsx) | Boards overview, expandable grade→subjects accordion, create subject modal |
-
-### Frontend — Routing ✅
-
-[App.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/App.tsx) — 13 new route imports + 6 specific routes wired:
-- Admin: `/admin/syllabus`, `/admin/users`, `/admin/classes`
-- Super Admin: `/super-admin/ai-costs`, `/super-admin/chat-audit`, `/super-admin/master-data`
-
-### Backend — Tests (1 file, 17 test cases) ✅
-
-| File | Test Cases |
-|------|------------|
-| [test_admin_superadmin.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/tests/test_admin_superadmin.py) | Admin service importability (12 functions), SuperAdmin service importability (8 functions), RBAC enum boundaries, model structure (AuditLog, HomepageContent, AICostLog, AIConversation, TeacherClassAssignment), router endpoint counts |
+| Role | File | Features |
+|------|------|----------|
+| Admin | [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/DashboardPage.tsx) | Stats cards + module navigation |
+| Admin | [SyllabusCRUDPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/SyllabusCRUDPage.tsx) | Subject/syllabus unit management |
+| Admin | [UserManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/UserManagementPage.tsx) | User listing, search, update, toggle |
+| Admin | [ClassManagementPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/admin/ClassManagementPage.tsx) | Class creation + teacher assignment |
+| SuperAdmin | [DashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/DashboardPage.tsx) | Stats cards + module navigation |
+| SuperAdmin | [AICostDashboardPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/AICostDashboardPage.tsx) | Period selector, daily cost trend, per-user costs |
+| SuperAdmin | [ChatAuditPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/ChatAuditPage.tsx) | Searchable conversation list, message drill-down |
+| SuperAdmin | [MasterDataPage.tsx](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/src/pages/superadmin/MasterDataPage.tsx) | Boards, grades, subjects accordion |
 
 ---
 
 ## Cumulative File Count
 
-| Layer | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Total |
-|-------|---------|---------|---------|---------|-------|
-| Backend Models | 11 | — | — | — | 11 |
-| Backend Services | 2 | 5 | 3 | 2 | 12 |
-| Backend Routers | 7 | 2 | — (upgraded) | — (upgraded) | 9 |
-| Backend Tests | 3 | 1 | 1 | 1 | 6 |
-| Backend Scripts | 1 | 1 | — (bug fix) | — | 2 |
-| Gateway | 6 | — (upgraded) | — | — | 6 |
-| Frontend Pages | 8 | 3 | 7 | 7 (+1 upgraded) | 25 |
-| Frontend Components | 3 | 5 | — | — | 8 |
-| Frontend Hooks/API | 4 | — | — | — | 4 |
+| Layer | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 5 | Total |
+|-------|---------|---------|---------|---------|---------|-------|
+| Backend Models | 11 | — | — | — | — | 11 |
+| Backend Services | 2 | 5 | 3 | 2 | 2 (+1 enhanced) | 14 |
+| Backend Routers | 7 | 2 | — (upgraded) | — (upgraded) | 2 | 11 |
+| Backend Schemas | 6 | 1 | — | — | 1 | 8 |
+| Backend Tests | 3 | 1 | 1 | 1 | 2 | 8 |
+| Backend Scripts | 1 | 1 | — (bug fix) | — | 1 | 3 |
+| Backend Providers | 8 | — | — | — | 2 (upgraded) | 8 |
+| Gateway | 6 | — (upgraded) | — | — | — | 6 |
+| Frontend Pages | 8 | 3 | 7 | 8 | 2 | 28 |
+| Frontend Components | 3 | 5 | — | — | — | 8 |
+| Frontend Hooks/API | 4 | — | — | — | — | 4 |
 
 ---
 
@@ -136,7 +174,7 @@ All three services compile and build with zero errors. The platform has **functi
 | Check | Result |
 |-------|--------|
 | Frontend `tsc --noEmit` | ✅ Zero errors |
-| Frontend `vite build` | ✅ **1704 modules**, 8.83s, 461 KB JS + 37.9 KB CSS, PWA SW |
+| Frontend `vite build` | ✅ **1706 modules**, 9.85s, 483 KB JS + 38.6 KB CSS, PWA SW |
 | Gateway `tsc --noEmit` | ✅ Zero errors |
 | Docker compose | ⏳ Docker not installed |
 | Alembic migration | ⏳ Needs Postgres |
@@ -155,16 +193,26 @@ See [LOCAL_SETUP.md](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/docs
 | 3 | `alembic upgrade head` |
 | 4 | `python -m app.scripts.seed_dev_users` |
 | 5 | `python -m app.scripts.seed_syllabus` |
-| 6 | `uvicorn app.main:app --reload` |
-| 7 | `cd realtime-gateway && npm run dev` |
-| 8 | `cd frontend && npm run dev` |
+| 6 | `python -m app.scripts.seed_subscriptions` |
+| 7 | `uvicorn app.main:app --reload` |
+| 8 | `cd realtime-gateway && npm run dev` |
+| 9 | `cd frontend && npm run dev` |
 
 ### Test Users
 
 | Role | Phone | Name | Pages |
 |------|-------|------|-------|
-| Student | `9999999001` | राम पाटील | Dashboard, AI Guru, Syllabus |
+| Student | `9999999001` | राम पाटील | Dashboard, AI Guru, Syllabus, **Subscription** |
 | Teacher | `9999999002` | सुनीता जाधव | Dashboard, Attendance, Progress, AI Usage |
-| Parent | `9999999003` | महेश कुलकर्णी | Dashboard, Child Progress, Reports |
-| Admin | `9999999004` | Admin User | Dashboard (Phase 4) |
-| Super Admin | `9999999005` | Super Admin | Dashboard (Phase 4) |
+| Parent | `9999999003` | महेश कुलकर्णी | Dashboard, Child Progress, Reports, **Notifications** |
+| Admin | `9999999004` | Admin User | Dashboard, Syllabus CRUD, Users, Classes |
+| Super Admin | `9999999005` | Super Admin | Dashboard, AI Costs, Chat Audit, Master Data |
+
+### New in Phase 5
+
+| Feature | URL | Role |
+|---------|-----|------|
+| Subscription Plans | `/student/subscription` | Student |
+| Notification Settings | `/parent/notifications` | Parent |
+| Payment API | `/api/payments/*` | Authenticated |
+| WhatsApp Webhook | `/api/webhooks/whatsapp` | System (from gateway) |

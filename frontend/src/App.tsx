@@ -14,6 +14,7 @@ import { HomePage } from './pages/public/HomePage';
 import { StudentDashboard } from './pages/student/DashboardPage';
 import { AIGuruPage } from './pages/student/AIGuruPage';
 import { SyllabusPage } from './pages/student/SyllabusPage';
+import { SubscriptionPage } from './pages/student/SubscriptionPage';
 import { TeacherDashboard } from './pages/teacher/DashboardPage';
 import { AttendancePage } from './pages/teacher/AttendancePage';
 import { StudentProgressPage } from './pages/teacher/StudentProgressPage';
@@ -21,6 +22,7 @@ import { AIUsagePage } from './pages/teacher/AIUsagePage';
 import { ParentDashboard } from './pages/parent/DashboardPage';
 import { ChildProgressPage } from './pages/parent/ChildProgressPage';
 import { ReportsPage } from './pages/parent/ReportsPage';
+import { NotificationSettingsPage } from './pages/parent/NotificationSettingsPage';
 import { AdminDashboard } from './pages/admin/DashboardPage';
 import { SyllabusCRUDPage } from './pages/admin/SyllabusCRUDPage';
 import { UserManagementPage } from './pages/admin/UserManagementPage';
@@ -64,6 +66,7 @@ export default function App() {
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/student/syllabus" element={<SyllabusPage />} />
         <Route path="/student/ai-guru" element={<AIGuruPage />} />
+        <Route path="/student/subscription" element={<SubscriptionPage />} />
         <Route path="/student/*" element={<StudentDashboard />} />
       </Route>
 
@@ -95,6 +98,7 @@ export default function App() {
         <Route path="/parent/children/:childId" element={<ChildProgressPage />} />
         <Route path="/parent/progress" element={<ChildProgressPage />} />
         <Route path="/parent/reports" element={<ReportsPage />} />
+        <Route path="/parent/notifications" element={<NotificationSettingsPage />} />
         <Route path="/parent/*" element={<ParentDashboard />} />
       </Route>
 

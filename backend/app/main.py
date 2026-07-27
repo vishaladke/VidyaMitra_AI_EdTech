@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, health, students, teachers, parents, admin, superadmin, ai, syllabus
+from app.routers import auth, health, students, teachers, parents, admin, superadmin, ai, syllabus, payments, webhooks
 
 logging.basicConfig(
     level=logging.INFO if settings.ENVIRONMENT == "local" else logging.WARNING,
@@ -66,6 +66,8 @@ app.include_router(admin.router)
 # Feature routes (RBAC enforced per-endpoint inside each router)
 app.include_router(ai.router)
 app.include_router(syllabus.router)
+app.include_router(payments.router)
+app.include_router(webhooks.router)
 
 # Super Admin — mounted at /{SUPERADMIN_URL_PATH}/api/...
 # This path is NOT linked from any public navigation

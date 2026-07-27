@@ -1,0 +1,72 @@
+# Render.com deployment configuration
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ── FastAPI Backend ──────────────────────────────────────────
+  - type: web
+    name: vidyamitra-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile.prod
+    dockerContext: ./backend
+    plan: free  # Upgrade to starter ($7/mo) once pilot users depend on it
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: pilot
+      - key: DATABASE_URL
+        fromGroup: vidyamitra-secrets
+      - key: REDIS_URL
+        fromGroup: vidyamitra-secrets
+      - key: JWT_SECRET
+        fromGroup: vidyamitra-secrets
+      - key: SUPERADMIN_URL_PATH
+        fromGroup: vidyamitra-secrets
+      - key: ANTHROPIC_API_KEY
+        fromGroup: vidyamitra-secrets
+      - key: OPENAI_API_KEY
+        fromGroup: vidyamitra-secrets
+      - key: PAYMENT_PROVIDER
+        value: razorpay_test
+      - key: RAZORPAY_KEY_ID
+        fromGroup: vidyamitra-secrets
+      - key: RAZORPAY_KEY_SECRET
+        fromGroup: vidyamitra-secrets
+      - key: RAZORPAY_WEBHOOK_SECRET
+        fromGroup: vidyamitra-secrets
+      - key: WHATSAPP_BSP_API_KEY
+        fromGroup: vidyamitra-secrets
+      - key: WHATSAPP_BSP_URL
+        fromGroup: vidyamitra-secrets
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        fromGroup: vidyamitra-secrets
+      - key: NOTIFICATION_PROVIDER
+        value: mock  # Switch to "whatsapp" when BSP is configured
+      - key: OTP_PROVIDER
+        value: dev_mock  # Switch to "firebase" or "msg91" for real SMS
+      - key: FRONTEND_URL
+        value: https://vidyamitra.pages.dev  # Your Cloudflare Pages URL
+
+  # ── Node.js Realtime Gateway ────────────────────────────────
+  - type: web
+    name: vidyamitra-gateway
+    runtime: docker
+    dockerfilePath: ./realtime-gateway/Dockerfile.prod
+    dockerContext: ./realtime-gateway
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          name: vidyamitra-backend
+          type: web
+          property: host
+      - key: REDIS_URL
+        fromGroup: vidyamitra-secrets
+      - key: JWT_SECRET
+        fromGroup: vidyamitra-secrets
+      - key: WHATSAPP_WEBHOOK_VERIFY_TOKEN
+        fromGroup: vidyamitra-secrets
+      - key: NODE_ENV
+        value: production

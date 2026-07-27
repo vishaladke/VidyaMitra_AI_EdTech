@@ -272,3 +272,60 @@ async def generate_all_reports(
 
     logger.info(f"📊 Generated {len(reports)} weekly reports")
     return reports
+
+
+async def generate_and_send_weekly_reports(
+    db: AsyncSession,
+    week_start: Optional[date] = None,
+    week_end: Optional[date] = None,
+) -> dict:
+    """Generate weekly reports AND send them via WhatsApp to parents.
+
+    This is the main entry point for the weekly cron job:
+    1. Generate reports for all active students
+    2. Send via notification_service to parents with WhatsApp enabled
+
+    Usage:
+        python -m app.scripts.send_weekly_reports
+    """
+    from app.services.notification_service import send_weekly_reports_batch
+
+    reports = await generate_all_reports(db, week_start, week_end)
+    delivery_summary = await send_weekly_reports_batch(db, reports)
+
+    logger.info(
+        f"📨 Weekly reports sent: {delivery_summary['sent']} sent, "
+        f"{delivery_summary['skipped']} skipped, {delivery_summary['failed']} failed"
+    )
+    return {
+        "reports_generated": len(reports),
+        "delivery": delivery_summary,
+    }
+
+
+def format_whatsapp_template_params(report: dict) -> dict:
+    """Extract WhatsApp Utility template variable values from a report.
+
+    Maps report data to the BSP-registered template variables.
+    Template format:
+        📚 विद्यामित्र साप्ताहिक अहवाल
+        {{1}} — student name
+        {{2}} — grade
+        {{3}} — conversations count
+        {{4}} — active days
+        {{5}} — attendance percentage
+        {{6}} — summary text
+    """
+    student = report.get("student", {})
+    ai = report.get("ai_activity", {})
+    attendance = report.get("attendance", {})
+
+    return {
+        "1": student.get("full_name", "विद्यार्थी"),
+        "2": str(student.get("grade", "")),
+        "3": str(ai.get("conversations", 0)),
+        "4": str(ai.get("active_days", 0)),
+        "5": str(attendance.get("percentage", "N/A")),
+        "6": report.get("summary_mr", ""),
+    }
+

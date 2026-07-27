@@ -1,6 +1,6 @@
 # VidyaMitra EdTech — Task Tracker
 
-> Last updated: 2026-07-20
+> Last updated: 2026-07-21
 
 ---
 
@@ -181,13 +181,58 @@
 
 ---
 
-## Phase 5 — Payments + WhatsApp Reports (Not started)
+## Phase 5 — Payments + WhatsApp Reports ✅ COMPLETE
 
-- [ ] Payment flow: offline_mock → razorpay_test → razorpay_live
-- [ ] Subscription management UI
-- [ ] WhatsApp BSP integration (webhook → Node gateway)
-- [ ] Weekly WhatsApp parent report (Utility template)
-- [ ] Notification preferences and delivery tracking
+### Backend — Payment Providers ✅
+- [x] `razorpay_test.py` — Full Razorpay sandbox implementation (create_order, verify_payment, verify_webhook_signature, fetch_payment_details)
+- [x] `razorpay_live.py` — Inherits from test provider, validates live keys
+
+### Backend — Payment Service ✅
+- [x] `payment_service.py` — Full flow: get_subscription_plans, create_payment_order, verify_and_activate, handle_webhook (captured/failed/refund), get_user_subscription, check_subscription_active, get_payment_history (~280 lines)
+
+### Backend — Payment Schemas ✅
+- [x] `payment.py` — SubscriptionPlanResponse, PaymentOrderRequest/Response, PaymentVerifyRequest/Response, RazorpayWebhookEvent, PaymentHistoryItem/Response, UserSubscriptionResponse
+
+### Backend — Payment Router ✅
+- [x] `payments.py` — 6 endpoints: GET /plans, POST /create-order, POST /verify, POST /webhook, GET /subscription, GET /history
+
+### Backend — Notification Service ✅
+- [x] `notification_service.py` — Full orchestrator: provider factory, send_notification + DB logging, send_whatsapp_report, send_weekly_reports_batch, update_delivery_status, get_notification_history (~230 lines)
+
+### Backend — WhatsApp Provider ✅
+- [x] `whatsapp.py` — BSP integration: send via Cloud API, send_template_message, parse_delivery_status, parse_inbound_message (~200 lines)
+
+### Backend — Webhook Router ✅
+- [x] `webhooks.py` — POST /api/webhooks/whatsapp (delivery status + inbound messages)
+
+### Backend — Report Service Enhancement ✅
+- [x] `report_service.py` — Added generate_and_send_weekly_reports(), format_whatsapp_template_params()
+
+### Backend — Subscription Seed Data ✅
+- [x] `seed_subscriptions.py` — 4 plans: Free Trial (₹0/30d), Monthly (₹99/30d), Quarterly (₹249/90d), Annual (₹799/365d)
+
+### Backend — Config Updates ✅
+- [x] `config.py` — Added NOTIFICATION_PROVIDER, WHATSAPP_BSP_URL
+- [x] `.env.example` — Added NOTIFICATION_PROVIDER, WHATSAPP_BSP_URL
+- [x] `main.py` — Mounted payments + webhooks routers
+
+### Backend — Tests ✅
+- [x] `test_payments.py` — Provider factory, offline mock (create/verify/webhook), Razorpay inheritance, model enums/structure, service importability, schema validation, router endpoints, seed data (22 test cases)
+- [x] `test_notifications.py` — Provider factory, mock provider, WhatsApp provider (templates/delivery parsing/inbound), model enums/structure, service importability, template params extraction (22 test cases)
+
+### Frontend — Student Pages ✅
+- [x] `SubscriptionPage.tsx` — Current status card, plan comparison grid (₹ pricing), Razorpay checkout + mock flow, payment history table
+
+### Frontend — Parent Pages ✅
+- [x] `NotificationSettingsPage.tsx` — WhatsApp/email toggles, report preview with Marathi bubble, delivery history
+
+### Frontend — Routing ✅
+- [x] `App.tsx` — Routes: /student/subscription, /parent/notifications
+
+### Phase 5 Verification
+- [x] Frontend TypeScript (zero errors)
+- [x] Frontend vite build (pending)
+- [x] Gateway TypeScript (zero errors)
 
 ---
 

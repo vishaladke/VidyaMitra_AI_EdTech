@@ -1,0 +1,48 @@
+# ── Production Gateway Dockerfile ─────────────────────────────────
+# Optimized for Render free tier:
+# - Multi-stage build
+# - Non-root user
+# - Production Node.js settings
+
+FROM node:20-alpine AS builder
+
+WORKDIR /build
+
+COPY package.json package-lock.json* ./
+RUN npm ci --production=false
+
+COPY . .
+RUN npm run build
+
+# ── Production stage ──────────────────────────────────────────────
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Security: non-root user
+RUN addgroup -S edtech && adduser -S edtech -G edtech
+
+# Copy only production dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy compiled JS from builder
+COPY --from=builder /build/dist ./dist
+
+# Own the app directory
+RUN chown -R edtech:edtech /app
+
+# Switch to non-root user
+USER edtech
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD wget -q --spider http://localhost:4000/health || exit 1
+
+# Production settings
+ENV NODE_ENV=production
+
+CMD ["node", "dist/index.js"]
+
+EXPOSE 4000

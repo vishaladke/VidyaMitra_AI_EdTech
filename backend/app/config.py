@@ -57,8 +57,12 @@ class Settings(BaseSettings):
 
     # ── WhatsApp ──────────────────────────────────────────
     WHATSAPP_BSP_API_KEY: str = ""
+    WHATSAPP_BSP_URL: str = ""  # BSP API base URL (e.g., https://graph.facebook.com/v18.0/{phone_number_id})
     WHATSAPP_PHONE_NUMBER_ID: str = ""
     WHATSAPP_WEBHOOK_VERIFY_TOKEN: str = ""
+
+    # ── Notifications ─────────────────────────────────────
+    NOTIFICATION_PROVIDER: Literal["mock", "whatsapp"] = "mock"
 
     # ── Realtime Gateway ──────────────────────────────────
     BACKEND_URL: str = "http://backend:8000"
