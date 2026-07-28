@@ -1,0 +1,3 @@
+# Cloudflare Pages SPA routing — send all unmatched paths to index.html
+# This is the fallback mechanism when cloudflare-pages.toml redirects don't apply
+/* /index.html 200

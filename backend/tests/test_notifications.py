@@ -301,4 +301,5 @@ def test_webhook_router_importable():
     from app.routers.webhooks import router
 
     routes = [r.path for r in router.routes]
-    assert "/whatsapp" in routes
+    # Routes include the prefix, e.g. /api/webhooks/whatsapp
+    assert any(r.endswith("/whatsapp") for r in routes)

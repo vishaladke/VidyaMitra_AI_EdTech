@@ -250,12 +250,13 @@ def test_payment_router_importable():
     from app.routers.payments import router
 
     routes = [r.path for r in router.routes]
-    assert "/plans" in routes
-    assert "/create-order" in routes
-    assert "/verify" in routes
-    assert "/webhook" in routes
-    assert "/subscription" in routes
-    assert "/history" in routes
+    # Routes include the prefix, e.g. /api/payments/plans
+    assert any(r.endswith("/plans") for r in routes)
+    assert any(r.endswith("/create-order") for r in routes)
+    assert any(r.endswith("/verify") for r in routes)
+    assert any(r.endswith("/webhook") for r in routes)
+    assert any(r.endswith("/subscription") for r in routes)
+    assert any(r.endswith("/history") for r in routes)
 
 
 def test_payment_router_has_correct_endpoint_count():

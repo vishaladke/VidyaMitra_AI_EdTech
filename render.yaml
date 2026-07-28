@@ -46,6 +46,10 @@ services:
         value: dev_mock  # Switch to "firebase" or "msg91" for real SMS
       - key: FRONTEND_URL
         value: https://vidyamitra.pages.dev  # Your Cloudflare Pages URL
+      - key: SENTRY_DSN
+        fromGroup: vidyamitra-secrets  # Leave blank in secrets to disable
+      - key: APP_VERSION
+        value: "0.1.0"
 
   # ── Node.js Realtime Gateway ────────────────────────────────
   - type: web

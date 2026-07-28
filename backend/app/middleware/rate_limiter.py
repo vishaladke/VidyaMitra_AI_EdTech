@@ -19,6 +19,13 @@ class RateLimiter:
         self._redis: Optional[aioredis.Redis] = None
 
     async def get_redis(self) -> aioredis.Redis:
+        """Get or create a Redis client. Handles stale connections gracefully."""
+        if self._redis is not None:
+            try:
+                await self._redis.ping()
+            except Exception:
+                # Connection is stale (e.g. event loop changed in tests)
+                self._redis = None
         if self._redis is None:
             self._redis = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
         return self._redis

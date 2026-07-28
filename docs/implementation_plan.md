@@ -1,33 +1,41 @@
-# Phase 5: Payments + WhatsApp Reports — ✅ COMPLETE
+# Phase 6: Security Hardening + Free-Tier Deploy — 🚧 IN PROGRESS
 
-> Completed: 2026-07-21
+> Started: 2026-07-27
 
 ## Summary
 
-Phase 5 implemented the complete payment flow and WhatsApp notification system:
+Phase 6 implements the security hardening and deploy preparation checklist from [DEPLOYMENT.md](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/DEPLOYMENT.md):
 
 | Component | Files | Status |
 |-----------|-------|--------|
-| Razorpay providers (test + live) | 2 | ✅ |
-| Payment service (full lifecycle) | 1 | ✅ |
-| Payment schemas | 1 | ✅ |
-| Payment router (6 endpoints) | 1 | ✅ |
-| Notification service | 1 | ✅ |
-| WhatsApp BSP provider | 1 | ✅ |
-| Webhook router | 1 | ✅ |
-| Report service enhancement | 1 | ✅ |
-| Subscription seed data | 1 | ✅ |
-| Config updates | 3 | ✅ |
-| Student SubscriptionPage | 1 | ✅ |
-| Parent NotificationSettingsPage | 1 | ✅ |
-| Route wiring | 1 | ✅ |
-| Payment tests (22 cases) | 1 | ✅ |
-| Notification tests (22 cases) | 1 | ✅ |
+| Security middleware wiring (main.py) | 1 modified | ✅ |
+| Sentry monitoring integration | 3 modified, 1 existing | ✅ |
+| Config updates (SENTRY_DSN, FRONTEND_URL, APP_VERSION) | 2 modified | ✅ |
+| Dynamic CORS for production | 1 modified | ✅ |
+| Security tests (26 cases) | 1 new | ✅ |
+| Cloudflare Pages _redirects + _headers | 2 new | ✅ |
+| Render.yaml updates | 1 modified | ✅ |
+| .env.example updates | 1 modified | ✅ |
+| pyproject.toml (sentry dep) | 1 modified | ✅ |
+| Documentation sync (README, task, walkthrough) | 4 modified | ✅ |
+
+## Remaining
+
+| Item | Status |
+|------|--------|
+| Docker compose up --build | ⏳ Needs Docker |
+| Alembic migration verification | ⏳ Needs Postgres |
+| Backend pytest full suite | ⏳ Needs pip install |
+| Secrets rotation for production | ⏳ Pre-deploy |
+| UptimeRobot + Sentry DSN setup | ⏳ Post-deploy |
+| Rate limit load testing | ⏳ Post-deploy |
 
 ## Verification
 
 | Check | Result |
 |-------|--------|
 | Frontend `tsc --noEmit` | ✅ Zero errors |
-| Frontend `vite build` | ✅ 1706 modules, 483 KB JS, PWA SW |
+| Frontend `vite build` | ✅ 1706 modules, PWA SW |
 | Gateway `tsc --noEmit` | ✅ Zero errors |
+| Security middleware mounted | ✅ |
+| Sentry graceful no-DSN | ✅ |

@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ── Subscription Plans ────────────────────────────────────────────
@@ -18,8 +18,7 @@ class SubscriptionPlanResponse(BaseModel):
     features: Optional[dict] = None
     is_active: bool = True
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SubscriptionPlanListResponse(BaseModel):
@@ -72,8 +71,7 @@ class RazorpayWebhookEvent(BaseModel):
     contains: Optional[list[str]] = None
     payload: dict
 
-    class Config:
-        extra = "allow"  # Razorpay may add fields
+    model_config = ConfigDict(extra="allow")  # Razorpay may add fields
 
 
 # ── Payment History ───────────────────────────────────────────────

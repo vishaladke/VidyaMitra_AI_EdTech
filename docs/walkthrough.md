@@ -1,6 +1,6 @@
 # Walkthrough — VidyaMitra EdTech Platform
 
-> Last updated: 2026-07-21
+> Last updated: 2026-07-27
 
 ## Summary
 
@@ -8,9 +8,10 @@
 **Phase 2** AI Guru + Syllabus — ✅ COMPLETE.  
 **Phase 3** Teacher + Parent Dashboards — ✅ COMPLETE.  
 **Phase 4** Admin + Super Admin Panels — ✅ COMPLETE.  
-**Phase 5** Payments + WhatsApp Reports — ✅ COMPLETE.
+**Phase 5** Payments + WhatsApp Reports — ✅ COMPLETE.  
+**Phase 6** Security Hardening + Deploy Configs — 🚧 IN PROGRESS.
 
-All three services compile and build with zero errors. The platform has **functional dashboards for all 5 roles** with full backend APIs, payment processing (offline_mock → razorpay_test → razorpay_live), WhatsApp notification integration, and subscription management.
+All three services compile and build with zero errors. The platform has **functional dashboards for all 5 roles** with full backend APIs, payment processing (offline_mock → razorpay_test → razorpay_live), WhatsApp notification integration, subscription management, and **production-grade security middleware** (OWASP headers, rate limiting, request validation, Sentry error tracking).
 
 ---
 
@@ -151,21 +152,66 @@ All three services compile and build with zero errors. The platform has **functi
 
 ---
 
+## Phase 6 Changes (Security Hardening + Deploy)
+
+### Backend — Security Middleware Wiring (3 modules activated)
+
+These modules were **built in Phase 1 but never mounted in main.py** — now activated:
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| [security_headers.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/middleware/security_headers.py) | ~120 | OWASP security headers (X-Frame-Options, HSTS, CSP, etc.) + request validation (payload size, content-type) |
+| [rate_limiter.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/middleware/rate_limiter.py) | ~74 | Redis-backed sliding-window rate limiter (per-IP, per-user, Super Admin login lockout) |
+| [sentry.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/monitoring/sentry.py) | ~119 | Sentry SDK integration with FastAPI, SQLAlchemy, Redis instrumenting; DPDP-compliant (no PII) |
+
+### Backend — Configuration Updates (3 files)
+
+| File | Changes |
+|------|---------|
+| [main.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/main.py) | Mounted SecurityHeadersMiddleware + RequestValidationMiddleware, init_sentry() call, dynamic CORS, version from config |
+| [config.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/app/config.py) | Added `SENTRY_DSN`, `APP_VERSION`, `FRONTEND_URL`, `cors_origins_with_frontend` property |
+| [pyproject.toml](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/pyproject.toml) | Added `sentry-sdk[fastapi]` as optional `monitoring` dependency + included in dev |
+
+### Backend — Tests (1 new file, 26 test cases)
+
+| File | Test Cases |
+|------|------------|
+| [test_security.py](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/backend/tests/test_security.py) | SecurityHeaders middleware, RequestValidation, RateLimiter structure, Sentry graceful degradation (no DSN/no crash), config security (JWT, CORS, Super Admin URL), Razorpay webhook signature tamper detection, main.py integration |
+
+### Frontend — Deploy Config Files (2 new files)
+
+| File | Purpose |
+|------|---------|
+| [_redirects](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/public/_redirects) | Cloudflare Pages SPA catch-all (`/* /index.html 200`) |
+| [_headers](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/frontend/public/_headers) | Production security headers (OWASP, CSP with Razorpay, cache control for assets/SW) |
+
+### Deploy Config Updates (2 files)
+
+| File | Changes |
+|------|---------|
+| [render.yaml](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/render.yaml) | Added `SENTRY_DSN` from secrets, `APP_VERSION` env var |
+| [.env.example](file:///c:/009/My%20Own%20Project/VidyaMitra_AI_EdTech/.env.example) | Added `SENTRY_DSN`, `APP_VERSION`, `FRONTEND_URL` |
+
+---
+
 ## Cumulative File Count
 
-| Layer | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 5 | Total |
-|-------|---------|---------|---------|---------|---------|-------|
-| Backend Models | 11 | — | — | — | — | 11 |
-| Backend Services | 2 | 5 | 3 | 2 | 2 (+1 enhanced) | 14 |
-| Backend Routers | 7 | 2 | — (upgraded) | — (upgraded) | 2 | 11 |
-| Backend Schemas | 6 | 1 | — | — | 1 | 8 |
-| Backend Tests | 3 | 1 | 1 | 1 | 2 | 8 |
-| Backend Scripts | 1 | 1 | — (bug fix) | — | 1 | 3 |
-| Backend Providers | 8 | — | — | — | 2 (upgraded) | 8 |
-| Gateway | 6 | — (upgraded) | — | — | — | 6 |
-| Frontend Pages | 8 | 3 | 7 | 8 | 2 | 28 |
-| Frontend Components | 3 | 5 | — | — | — | 8 |
-| Frontend Hooks/API | 4 | — | — | — | — | 4 |
+| Layer | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 5 | Phase 6 | Total |
+|-------|---------|---------|---------|---------|---------|---------|-------|
+| Backend Models | 11 | — | — | — | — | — | 11 |
+| Backend Services | 2 | 5 | 3 | 2 | 2 (+1 enhanced) | — | 14 |
+| Backend Routers | 7 | 2 | — (upgraded) | — (upgraded) | 2 | — | 11 |
+| Backend Schemas | 6 | 1 | — | — | 1 | — | 8 |
+| Backend Tests | 3 | 1 | 1 | 1 | 2 | 1 | **9** |
+| Backend Scripts | 1 | 1 | — (bug fix) | — | 1 | — | 3 |
+| Backend Providers | 8 | — | — | — | 2 (upgraded) | — | 8 |
+| Backend Middleware | 3 | — | — | — | — | — (wired) | 3 |
+| Backend Monitoring | 1 | — | — | — | — | — (wired) | 1 |
+| Gateway | 6 | — (upgraded) | — | — | — | — | 6 |
+| Frontend Pages | 8 | 3 | 7 | 8 | 2 | — | 28 |
+| Frontend Components | 3 | 5 | — | — | — | — | 8 |
+| Frontend Hooks/API | 4 | — | — | — | — | — | 4 |
+| Frontend Deploy | — | — | — | — | — | 2 | 2 |
 
 ---
 
@@ -176,6 +222,9 @@ All three services compile and build with zero errors. The platform has **functi
 | Frontend `tsc --noEmit` | ✅ Zero errors |
 | Frontend `vite build` | ✅ **1706 modules**, 9.85s, 483 KB JS + 38.6 KB CSS, PWA SW |
 | Gateway `tsc --noEmit` | ✅ Zero errors |
+| Security middleware mounted | ✅ SecurityHeaders + RequestValidation + CORS |
+| Sentry initialization | ✅ Graceful no-op when DSN empty |
+| Deploy configs | ✅ `_redirects` + `_headers` for Cloudflare Pages |
 | Docker compose | ⏳ Docker not installed |
 | Alembic migration | ⏳ Needs Postgres |
 | Backend pytest | ⏳ Needs pip install + Postgres |

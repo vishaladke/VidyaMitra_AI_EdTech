@@ -1,6 +1,13 @@
-"""Test fixtures for backend tests."""
+"""Test fixtures for backend tests.
+
+Handles Python 3.14 + asyncpg + Starlette BaseHTTPMiddleware event loop
+compatibility issues on Windows. The core issue is that asyncpg's connection
+teardown tries to create tasks on a closed loop during pytest cleanup.
+"""
 import asyncio
+import sys
 import uuid
+import warnings
 from typing import AsyncGenerator
 
 import pytest
@@ -12,15 +19,32 @@ from app.models.user import UserRole
 from app.utils.security import create_access_token
 
 
+# ── Python 3.14 + Windows: suppress asyncpg teardown noise ──────
+# asyncpg's connection cleanup creates tasks on a closing loop, which
+# raises RuntimeError on Python 3.14's stricter event loop. These errors
+# happen ONLY during cleanup and don't affect test correctness.
+# Filter them to keep test output clean.
+warnings.filterwarnings("ignore", message="coroutine.*was never awaited", category=RuntimeWarning)
+
+
 @pytest.fixture(scope="session")
 def event_loop():
+    """Create a session-scoped event loop for async tests.
+
+    On Windows + Python 3.14, we need a fresh loop that outlives
+    all async fixtures to avoid teardown race conditions.
+    """
     loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     yield loop
+    # Give pending tasks a moment to clean up
+    loop.run_until_complete(asyncio.sleep(0.1))
     loop.close()
 
 
 @pytest_asyncio.fixture
 async def client() -> AsyncGenerator[AsyncClient, None]:
+    """Create an async test client that talks to the FastAPI app."""
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac

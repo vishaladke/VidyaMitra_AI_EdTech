@@ -1,6 +1,6 @@
 # VidyaMitra EdTech — Task Tracker
 
-> Last updated: 2026-07-21
+> Last updated: 2026-07-27
 
 ---
 
@@ -236,11 +236,55 @@
 
 ---
 
-## Phase 6 — Security Hardening + Free-Tier Deploy (Not started)
+## Phase 6 — Security Hardening + Free-Tier Deploy (In Progress)
 
-- [ ] Security hardening pass (DEPLOYMENT.md pre-launch checklist)
-- [ ] Free-tier deploy configs (Cloudflare Pages, Render, Neon, Upstash, R2)
-- [ ] UptimeRobot + Sentry monitoring setup
-- [ ] Secrets rotation
+### Backend — Security Middleware Wiring ✅
+- [x] Import + mount `SecurityHeadersMiddleware` in `main.py` (OWASP headers on every response)
+- [x] Import + mount `RequestValidationMiddleware` in `main.py` (payload size + content-type enforcement)
+- [x] Dynamic CORS with `FRONTEND_URL` for production deploy
+
+### Backend — Sentry Monitoring Integration ✅
+- [x] Call `init_sentry()` before FastAPI app creation in `main.py`
+- [x] Add `SENTRY_DSN` setting to `config.py`
+- [x] Add `APP_VERSION` setting to `config.py`
+- [x] Add `SENTRY_DSN` to `.env.example`
+- [x] Add `sentry-sdk[fastapi]` to `pyproject.toml` (optional `monitoring` extra + dev)
+- [x] Sentry status logged on startup
+
+### Backend — Configuration Updates ✅
+- [x] `FRONTEND_URL` setting added to `config.py`
+- [x] `cors_origins_with_frontend` property for dynamic CORS
+- [x] `APP_VERSION` exposed to FastAPI and Sentry release tag
+
+### Backend — Security Tests ✅
+- [x] `test_security.py` — 26 test cases:
+  - SecurityHeadersMiddleware importability + body size limits
+  - RateLimiter importability + config validation
+  - Sentry graceful degradation (no DSN, no crash)
+  - Config security (JWT expiry, CORS, Super Admin URL)
+  - Razorpay webhook signature tamper detection (valid/tampered/wrong-secret)
+  - main.py integration (app importable, middleware stack, sentry flag)
+
+### Frontend — Deploy Configs ✅
+- [x] `public/_redirects` — Cloudflare Pages SPA catch-all
+- [x] `public/_headers` — Production security headers (OWASP, CSP, cache control)
+
+### Deploy — Render.yaml Updates ✅
+- [x] Added `SENTRY_DSN` env var from secrets group
+- [x] Added `APP_VERSION` env var
+
+### Documentation Sync ✅
+- [x] `README.md` — Updated status (Phase 5 complete, Phase 6 in progress), added seed_subscriptions to Quick Start
+- [x] `docs/task.md` — Updated with Phase 6 items and timestamp
+- [x] `docs/walkthrough.md` — Added Phase 6 changes section
+- [x] `docs/implementation_plan.md` — Updated to Phase 6
+
+### Phase 6 — Remaining Items
+- [ ] Security hardening pass (DEPLOYMENT.md full pre-launch checklist)
+- [ ] Docker compose up --build verification
+- [ ] Alembic migration verification against Postgres
+- [ ] Backend pytest full suite pass
+- [ ] UptimeRobot + Sentry monitoring setup (requires deployed URLs)
+- [ ] Secrets rotation for production
 - [ ] Database backup verification
 - [ ] Rate limit load testing

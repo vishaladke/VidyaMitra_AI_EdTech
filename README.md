@@ -39,6 +39,7 @@ cd backend && python -m venv .venv && pip install -e ".[dev]"
 alembic upgrade head          # creates all 22 tables
 python -m app.scripts.seed_dev_users  # seeds 5 test users
 python -m app.scripts.seed_syllabus   # seeds Maharashtra State Board syllabus (grades 5–10)
+python -m app.scripts.seed_subscriptions  # seeds 4 subscription plans (₹0–₹799)
 uvicorn app.main:app --reload  # backend at :8000
 # In a new terminal:
 cd realtime-gateway && npm install && npm run dev  # gateway at :4000
@@ -59,7 +60,7 @@ See [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) for the full guide with trouble
 - [x] **Phase 3 complete** — Teacher dashboard (attendance, student progress, AI usage oversight, assignments), Parent dashboard (children, progress, weekly reports, notification prefs), report generation service
 - [ ] Infrastructure verification — Docker compose up, Alembic migration, pytest, RBAC end-to-end
 - [x] **Phase 4 complete** — Admin panel (syllabus CRUD, user management, class management) + Super Admin panel (AI cost dashboard, chat audit, master data, CMS, audit logs)
-- [ ] Phase 5 — Payments + WhatsApp reports
-- [ ] Phase 6 — Security hardening + free-tier pilot deploy
+- [x] **Phase 5 complete** — Payments (offline_mock → razorpay_test → razorpay_live), WhatsApp notification integration, subscription management
+- [/] **Phase 6 in progress** — Security hardening (OWASP middleware, Sentry monitoring), free-tier deploy configs (Cloudflare Pages, Render)
 - [ ] School Profile module (later, only once a school signs on)
 

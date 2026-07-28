@@ -10,10 +10,12 @@ class Settings(BaseSettings):
 
     # ── Core ──────────────────────────────────────────────
     ENVIRONMENT: Literal["local", "pilot", "production"] = "local"
+    APP_VERSION: str = "0.1.0"
     JWT_SECRET: str = "change_me_to_a_long_random_string"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     SUPERADMIN_URL_PATH: str = "change-me-to-something-unguessable"
+    FRONTEND_URL: str = "http://localhost:5173"  # Cloudflare Pages URL in prod
 
     # ── Database ──────────────────────────────────────────
     DATABASE_URL: str = "postgresql+asyncpg://edtech:edtech_local_dev@postgres:5432/edtech_platform"
@@ -64,6 +66,9 @@ class Settings(BaseSettings):
     # ── Notifications ─────────────────────────────────────
     NOTIFICATION_PROVIDER: Literal["mock", "whatsapp"] = "mock"
 
+    # ── Monitoring ────────────────────────────────────────
+    SENTRY_DSN: str = ""  # Leave blank to disable; free tier: 5K errors/month
+
     # ── Realtime Gateway ──────────────────────────────────
     BACKEND_URL: str = "http://backend:8000"
 
@@ -74,6 +79,14 @@ class Settings(BaseSettings):
 
     # ── CORS ──────────────────────────────────────────────
     CORS_ORIGINS: list[str] = Field(default=["http://localhost:5173", "http://localhost:4000"])
+
+    @property
+    def cors_origins_with_frontend(self) -> list[str]:
+        """CORS origins including FRONTEND_URL for production."""
+        origins = list(self.CORS_ORIGINS)
+        if self.FRONTEND_URL and self.FRONTEND_URL not in origins:
+            origins.append(self.FRONTEND_URL)
+        return origins
 
     model_config = {
         "env_file": ".env",
