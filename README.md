@@ -8,13 +8,14 @@ All project documentation lives in the `docs/` folder:
 
 | File | Purpose |
 |---|---|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | System design, tech stack rationale, data model, AI/safety design, security, compliance |
-| [`DEPLOYMENT.md`](DEPLOYMENT.md) | Local setup → free-tier pilot hosting → scale-up, with a cost table |
-| [`ANTIGRAVITY_PROMPT.md`](ANTIGRAVITY_PROMPT.md) | Copy-paste build prompt for Antigravity IDE / Claude Opus |
-| [`docs/implementation_plan.md`](docs/implementation_plan.md) | Phase 4 implementation plan: Admin + Super Admin panel completion |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System design, tech stack rationale, data model, AI/safety design, security, compliance |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Local setup → free-tier pilot hosting → scale-up, with a cost table |
+| [`docs/ANTIGRAVITY_PROMPT.md`](docs/ANTIGRAVITY_PROMPT.md) | Copy-paste build prompt for Antigravity IDE / Claude Opus |
+| [`docs/implementation_plan.md`](docs/implementation_plan.md) | Phase 6 implementation plan: Security hardening + deploy |
 | [`docs/walkthrough.md`](docs/walkthrough.md) | Full walkthrough: what was built across all phases, verification results |
 | [`docs/task.md`](docs/task.md) | Comprehensive task tracker: all phases with completion status |
 | [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) | Step-by-step local development setup guide (Docker, Python, Node) |
+| [`docs/verification_report.md`](docs/verification_report.md) | Full-stack verification report: 130 tests, 5-role RBAC, endpoint checks |
 | `architecture-diagram.mermaid` | Component diagram of the whole system |
 | `ai-cost-optimization-flow.mermaid` | How a student question is answered without hitting the LLM every time |
 | `docker-compose.yml` | One-command local environment (Postgres, Redis, backend, realtime gateway) |
@@ -58,9 +59,9 @@ See [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) for the full guide with trouble
 - [x] **Phase 1 complete** — backend (FastAPI + 22 tables + auth + RBAC), realtime gateway (Socket.io), frontend (React PWA + 5 dashboard shells)
 - [x] **Phase 2 complete** — AI Guru chat (cache-first flow + streaming), syllabus browser, functional student dashboard, progress service, safety fixes, seed data
 - [x] **Phase 3 complete** — Teacher dashboard (attendance, student progress, AI usage oversight, assignments), Parent dashboard (children, progress, weekly reports, notification prefs), report generation service
-- [ ] Infrastructure verification — Docker compose up, Alembic migration, pytest, RBAC end-to-end
+- [x] **Infrastructure verified** — Docker compose up, Alembic migration (22 tables), pytest (130/130 passed), 5-role RBAC end-to-end (20/20 cross-role blocks)
 - [x] **Phase 4 complete** — Admin panel (syllabus CRUD, user management, class management) + Super Admin panel (AI cost dashboard, chat audit, master data, CMS, audit logs)
 - [x] **Phase 5 complete** — Payments (offline_mock → razorpay_test → razorpay_live), WhatsApp notification integration, subscription management
-- [/] **Phase 6 in progress** — Security hardening (OWASP middleware, Sentry monitoring), free-tier deploy configs (Cloudflare Pages, Render)
+- [/] **Phase 6 in progress** — Security hardening (OWASP middleware ✅, Sentry monitoring ✅), free-tier deploy configs (Cloudflare Pages ✅, Render ✅), remaining: secrets rotation, load testing, monitoring setup
 - [ ] School Profile module (later, only once a school signs on)
 

@@ -23,14 +23,17 @@ Phase 6 implements the security hardening and deploy preparation checklist from 
 
 | Item | Status |
 |------|--------|
-| Docker compose up --build | ⏳ Needs Docker |
-| Alembic migration verification | ⏳ Needs Postgres |
-| Backend pytest full suite | ⏳ Needs pip install |
+| Docker compose up | ✅ Postgres + Redis healthy (2026-08-03) |
+| Alembic migration verification | ✅ All 22 tables at head (2026-08-03) |
+| Backend pytest full suite | ✅ 130/130 passed, 1.98s (2026-08-03) |
+| 5-role RBAC end-to-end | ✅ 20/20 cross-role blocks (2026-08-03) |
+| Feature endpoint verification | ✅ 12/13 OK (2026-08-03) |
+| Security hardening (pre-launch checklist) | ⏳ Pre-deploy |
 | Secrets rotation for production | ⏳ Pre-deploy |
 | UptimeRobot + Sentry DSN setup | ⏳ Post-deploy |
 | Rate limit load testing | ⏳ Post-deploy |
 
-## Verification
+## Verification (2026-08-03)
 
 | Check | Result |
 |-------|--------|
@@ -39,3 +42,10 @@ Phase 6 implements the security hardening and deploy preparation checklist from 
 | Gateway `tsc --noEmit` | ✅ Zero errors |
 | Security middleware mounted | ✅ |
 | Sentry graceful no-DSN | ✅ |
+| Docker Postgres + Redis | ✅ Healthy |
+| Alembic migration | ✅ At head |
+| Backend pytest | ✅ **130 passed** |
+| 5-role OTP auth | ✅ All roles login |
+| Super Admin TOTP 2FA | ✅ Enforced |
+| RBAC cross-role blocks | ✅ 20/20 → 403 |
+| Unauthenticated blocks | ✅ 5/5 → 401/404 |

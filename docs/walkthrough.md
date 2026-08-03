@@ -1,6 +1,6 @@
 # Walkthrough — VidyaMitra EdTech Platform
 
-> Last updated: 2026-07-27
+> Last updated: 2026-08-03
 
 ## Summary
 
@@ -215,19 +215,58 @@ These modules were **built in Phase 1 but never mounted in main.py** — now act
 
 ---
 
-## Verification Results
+## Verification Results (2026-08-03 Full Stack Test)
 
+### Infrastructure
 | Check | Result |
 |-------|--------|
-| Frontend `tsc --noEmit` | ✅ Zero errors |
-| Frontend `vite build` | ✅ **1706 modules**, 9.85s, 483 KB JS + 38.6 KB CSS, PWA SW |
-| Gateway `tsc --noEmit` | ✅ Zero errors |
+| Docker Desktop | ✅ v29.6.1 |
+| PostgreSQL 16 + pgvector | ✅ Healthy on port 5432 |
+| Redis 7 | ✅ Healthy on port 6379 |
+| Alembic `upgrade head` | ✅ All 22 tables at head |
+| Seed data (users/syllabus/subscriptions) | ✅ All loaded |
+
+### Backend Test Suite
+| Check | Result |
+|-------|--------|
+| `pytest tests/ -v` | ✅ **130 passed** in 1.98s |
+| Warnings | 2 Sentry deprecation (non-blocking) |
+
+### Service Health
+| Check | Result |
+|-------|--------|
+| Backend `localhost:8000/health` | ✅ `{"status":"healthy"}` |
+| Gateway `localhost:4000/health` | ✅ `{"status":"healthy"}` |
+| Frontend `localhost:5173` | ✅ 200 OK |
+
+### Five-Role Auth + RBAC Matrix
+| Role | OTP Login | Own Dashboard | Cross-Role Blocked |
+|------|-----------|---------------|-------------------|
+| Student | ✅ Token issued | ✅ 200 | ✅ 3/3 → 403 |
+| Teacher | ✅ Token issued | ✅ 200 | ✅ 3/3 → 403 |
+| Parent | ✅ Token issued | ✅ 200 | ✅ 3/3 → 403 |
+| Admin | ✅ Token issued | ✅ 200 | ✅ 3/3 → 403 |
+| Super Admin | ✅ `requires_totp: true` | ⏸️ Needs TOTP | ✅ Correctly blocked |
+| Unauthenticated | — | ❌ 401/404 | ✅ 5/5 blocked |
+
+### Feature Endpoints (13 tested)
+| Check | Result |
+|-------|--------|
+| Student dashboard + syllabus + plans | ✅ 3/3 |
+| Teacher dashboard + AI usage | ✅ 2/2 |
+| Teacher roster | ⚠️ 404 (no class in seed data — expected) |
+| Parent dashboard + children + reports | ✅ 3/3 |
+| Admin dashboard + users + subjects | ✅ 3/3 |
+| Payment plans (public) | ✅ 200 |
+
+### Frontend Compilation
+| Check | Result |
+|-------|--------|
+| `tsc --noEmit` | ✅ Zero errors |
+| `vite build` | ✅ 1706 modules, 483 KB JS, PWA SW |
 | Security middleware mounted | ✅ SecurityHeaders + RequestValidation + CORS |
 | Sentry initialization | ✅ Graceful no-op when DSN empty |
 | Deploy configs | ✅ `_redirects` + `_headers` for Cloudflare Pages |
-| Docker compose | ⏳ Docker not installed |
-| Alembic migration | ⏳ Needs Postgres |
-| Backend pytest | ⏳ Needs pip install + Postgres |
 
 ---
 

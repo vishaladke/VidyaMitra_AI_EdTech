@@ -6,9 +6,12 @@
 
 @layer base {
   :root {
-    --color-brand: 99 102 241;     /* brand-500 */
-    --color-surface: 15 23 42;     /* surface-900 */
-    --color-surface-950: #020617;
+    --color-primary: 249 115 22;    /* saffron-500 */
+    --color-accent: 20 184 166;     /* teal-500 */
+    --color-ai: 139 92 246;         /* purple-500 */
+    --color-surface: 15 23 42;      /* slate-900 */
+    --color-surface-deep: 2 6 23;   /* slate-950 */
+    --sidebar-width: 272px;
   }
 
   * {
@@ -23,8 +26,8 @@
   }
 
   body {
-    background-color: #020617;
-    color: #ffffff;
+    background-color: #0F172A;
+    color: #f1f5f9;
     font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -38,74 +41,297 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Display/heading font */
+  .font-display {
+    font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+  }
+
   /* Scrollbar styling */
   ::-webkit-scrollbar {
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #020617;
+    background: #0F172A;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(249, 115, 22, 0.2);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(249, 115, 22, 0.4);
   }
 
   /* Selection colors */
   ::selection {
-    background: rgba(99, 102, 241, 0.3);
+    background: rgba(249, 115, 22, 0.3);
     color: #ffffff;
   }
 }
 
 @layer components {
-  /* Glassmorphism card */
+
+  /* ── Glassmorphism cards ──────────────────────────── */
+
   .glass-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Gradient button */
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Colored accent card variants */
+  .card-saffron {
+    border-top: 3px solid rgba(249, 115, 22, 0.6);
+  }
+  .card-saffron:hover {
+    border-color: rgba(249, 115, 22, 0.3);
+    box-shadow: 0 8px 32px rgba(249, 115, 22, 0.1);
+  }
+
+  .card-teal {
+    border-top: 3px solid rgba(20, 184, 166, 0.6);
+  }
+  .card-teal:hover {
+    border-color: rgba(20, 184, 166, 0.3);
+    box-shadow: 0 8px 32px rgba(20, 184, 166, 0.1);
+  }
+
+  .card-purple {
+    border-top: 3px solid rgba(139, 92, 246, 0.6);
+  }
+  .card-purple:hover {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+  }
+
+  .card-emerald {
+    border-top: 3px solid rgba(16, 185, 129, 0.6);
+  }
+  .card-emerald:hover {
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);
+  }
+
+  /* ── Buttons ──────────────────────────────────────── */
+
   .btn-primary {
-    @apply bg-gradient-to-r from-brand-500 to-brand-600 
-           hover:from-brand-600 hover:to-brand-700
+    @apply bg-gradient-to-r from-orange-500 to-orange-600
+           hover:from-orange-600 hover:to-amber-600
            text-white font-semibold px-6 py-3 rounded-xl
-           transition-all duration-200 ease-out
-           hover:shadow-lg hover:shadow-brand-500/25
-           active:scale-[0.98]
+           transition-all duration-300 ease-out
+           hover:shadow-lg hover:shadow-orange-500/25
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-accent {
+    @apply bg-gradient-to-r from-teal-500 to-teal-600
+           hover:from-teal-600 hover:to-cyan-600
+           text-white font-semibold px-6 py-3 rounded-xl
+           transition-all duration-300 ease-out
+           hover:shadow-lg hover:shadow-teal-500/25
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ai {
+    @apply bg-gradient-to-r from-violet-500 to-purple-600
+           hover:from-violet-600 hover:to-purple-700
+           text-white font-semibold px-6 py-3 rounded-xl
+           transition-all duration-300 ease-out
+           hover:shadow-lg hover:shadow-violet-500/25
+           active:scale-[0.97]
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply bg-white/10 hover:bg-white/15 text-white font-medium
+    @apply bg-white/8 hover:bg-white/12 text-white font-medium
            px-6 py-3 rounded-xl border border-white/10
-           transition-all duration-200
+           transition-all duration-300
            hover:border-white/20;
   }
 
-  /* Input field */
+  /* ── Input field ──────────────────────────────────── */
+
   .input-field {
     @apply w-full bg-white/5 border border-white/10 rounded-xl
-           px-4 py-3 text-white placeholder-white/40
-           focus:outline-none focus:ring-2 focus:ring-brand-500/50
-           focus:border-brand-500/50
-           transition-all duration-200;
+           px-4 py-3 text-white placeholder-white/30
+           focus:outline-none focus:ring-2 focus:ring-orange-500/40
+           focus:border-orange-500/40
+           transition-all duration-300;
   }
 
-  /* Sidebar nav item */
+  /* ── Sidebar navigation ──────────────────────────── */
+
   .nav-item {
     @apply flex items-center gap-3 px-4 py-3 rounded-xl
-           text-white/60 hover:text-white hover:bg-white/5
+           text-slate-400 hover:text-white hover:bg-white/5
            transition-all duration-200 cursor-pointer;
   }
 
   .nav-item.active {
-    @apply text-white bg-brand-500/10 border-l-2 border-brand-500;
+    @apply text-white bg-orange-500/10 border-l-3 border-orange-500;
+    box-shadow: inset 4px 0 12px rgba(249, 115, 22, 0.05);
+  }
+
+  .nav-item:hover:not(.active) {
+    @apply text-orange-200;
+  }
+
+  /* ── Decorative elements ─────────────────────────── */
+
+  /* Floating background orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    pointer-events: none;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .orb-saffron {
+    background: radial-gradient(circle, #F97316, #EA580C);
+  }
+
+  .orb-teal {
+    background: radial-gradient(circle, #14B8A6, #0D9488);
+  }
+
+  .orb-purple {
+    background: radial-gradient(circle, #8B5CF6, #6366F1);
+  }
+
+  /* Gradient text */
+  .text-gradient-saffron {
+    @apply bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-warm {
+    @apply bg-gradient-to-r from-orange-400 via-rose-400 to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* Animated gradient mesh background */
+  .gradient-mesh {
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(249, 115, 22, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(20, 184, 166, 0.06) 0%, transparent 50%);
+    animation: meshShift 15s ease-in-out infinite alternate;
+  }
+
+  /* Glow ring (for FAB) */
+  .glow-ring {
+    box-shadow:
+      0 0 20px rgba(249, 115, 22, 0.4),
+      0 0 60px rgba(249, 115, 22, 0.15);
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+
+  /* Stat card icon background */
+  .stat-icon-bg {
+    @apply w-10 h-10 rounded-xl flex items-center justify-center;
+  }
+
+  /* Progress ring (CSS-only) */
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+  .progress-ring circle {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Mobile sidebar overlay */
+  .sidebar-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .sidebar-mobile {
+    @apply fixed left-0 top-0 h-full z-50;
+    width: var(--sidebar-width);
+    animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
+/* ── Keyframe animations ──────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes meshShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4), 0 0 60px rgba(249, 115, 22, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(249, 115, 22, 0.6), 0 0 80px rgba(249, 115, 22, 0.25);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes flameFlicker {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-3deg); }
+  50% { transform: scale(0.95) rotate(2deg); }
+  75% { transform: scale(1.05) rotate(-1deg); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Staggered card entrance */
+.stagger-1 { animation: staggerIn 0.4s 0.05s both cubic-bezier(0.4, 0, 0.2, 1); }
+.stagger-2 { animation: staggerIn 0.4s 0.10s both cubic-bezier(0.4, 0, 0.2, 1); }
+.stagger-3 { animation: staggerIn 0.4s 0.15s both cubic-bezier(0.4, 0, 0.2, 1); }
+.stagger-4 { animation: staggerIn 0.4s 0.20s both cubic-bezier(0.4, 0, 0.2, 1); }
+.stagger-5 { animation: staggerIn 0.4s 0.25s both cubic-bezier(0.4, 0, 0.2, 1); }
+.stagger-6 { animation: staggerIn 0.4s 0.30s both cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Flame animation */
+.flame-animate {
+  animation: flameFlicker 1.5s ease-in-out infinite;
+  display: inline-block;
+}
