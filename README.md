@@ -16,6 +16,7 @@ All project documentation lives in the `docs/` folder:
 | [`docs/task.md`](docs/task.md) | Comprehensive task tracker: all phases with completion status |
 | [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) | Step-by-step local development setup guide (Docker, Python, Node) |
 | [`docs/verification_report.md`](docs/verification_report.md) | Full-stack verification report: 130 tests, 5-role RBAC, endpoint checks |
+| [`docs/manual_e2e_testing_plan.md`](docs/manual_e2e_testing_plan.md) | Manual E2E testing plan: ~182 test cases across all 5 roles, security, payments |
 | `architecture-diagram.mermaid` | Component diagram of the whole system |
 | `ai-cost-optimization-flow.mermaid` | How a student question is answered without hitting the LLM every time |
 | `docker-compose.yml` | One-command local environment (Postgres, Redis, backend, realtime gateway) |

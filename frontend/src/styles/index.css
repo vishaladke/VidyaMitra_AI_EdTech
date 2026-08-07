@@ -154,7 +154,7 @@
   }
 
   .btn-secondary {
-    @apply bg-white/8 hover:bg-white/12 text-white font-medium
+    @apply bg-white/[0.08] hover:bg-white/[0.12] text-white font-medium
            px-6 py-3 rounded-xl border border-white/10
            transition-all duration-300
            hover:border-white/20;
@@ -179,7 +179,7 @@
   }
 
   .nav-item.active {
-    @apply text-white bg-orange-500/10 border-l-3 border-orange-500;
+    @apply text-white bg-orange-500/10 border-l-[3px] border-orange-500;
     box-shadow: inset 4px 0 12px rgba(249, 115, 22, 0.05);
   }
 
